@@ -15,67 +15,57 @@ const operators = {
   insert: "insert",
   sum: "sum",
   reverse: "reverse",
-  function: "function",
   exponent: "exponent",
   flipSign: "flip sign",
   shift: "shift",
+  replace: "replace",
 };
 
-let buttons = [];
+interface GameButton {
+  operator: string;
+  operand?: number | string;
+  id: number;
+  replaceFunction?: ReplaceFunction;
+}
 
-let button1 = {
+interface ReplaceFunction {
+  target: string;
+  replacement: string;
+}
+
+let button1: GameButton = {
   operator: operators.multiply,
   operand: 2,
   id: 1,
 };
 
-let button2 = {
+let button2: GameButton = {
   operator: operators.insert,
   operand: "10",
   id: 2,
 };
 
-let button3 = {
+let button3: GameButton = {
   operator: operators.sum,
   id: 3,
 };
 
-let button4 = {
+let button4: GameButton = {
   operator: operators.exponent,
   operand: 3,
   id: 4,
 };
 
-function function5(display: string): string {
-  //search through the display and morph every 10 into a 1
-
-  if (display.length > 1) {
-    return display.replace("10", "1");
-  } else {
-    return display;
-  }
-}
-let button5 = {
-  operator: operators.function,
-  func: function5,
+let button5: GameButton = {
+  operator: operators.replace,
+  replaceFunction: {
+    target: "10",
+    replacement: "1",
+  } as ReplaceFunction,
   id: 5,
 };
 
-// let button1 = {
-//   operator: operators.add,
-//   operand: 2,
-//   id: 1
-// }
-// let button2 = {
-//   operator: operators.shift,
-//   direction: 'RIGHT',
-//   id: 2
-// }
-// let button3 = {
-//   operator: operators.shift,
-//   direction: 'LEFT',
-//   id: 3
-// }
+let buttons = [button1, button2, button3, button4, button5];
 
 //This will find the solution to the problem
 const solve = function () {
@@ -95,7 +85,7 @@ const pressButton = function (
   remainingMoves: number,
   display: string,
   solution: any[],
-  buttonPressed: string
+  buttonPressed: string,
 ): any {
   console.log(buttonPressed);
   console.log("We pressed a button! Remaining moves are: ", remainingMoves);
@@ -198,8 +188,25 @@ function modifyDisplay(display: string | number, button: any): string {
     case operators.shift:
       display = shiftDisplay(display + "", button.direction);
       break;
+    case operators.replace:
+      display = replaceDigits(display + "", button.replaceFunction);
+      break;
   }
   return display + "";
+}
+
+//This is a function to replace a specific sequence of digits in the display with a provided replacement sequence
+function replaceDigits(
+  display: string,
+  replaceFunction: ReplaceFunction
+): string {
+  if (display.length > 1) {
+    display = display.replace(
+      replaceFunction.target,
+      replaceFunction.replacement
+    );
+  }
+  return display;
 }
 
 //This is a special button that causes the display to be the sum of all the digits in the display
