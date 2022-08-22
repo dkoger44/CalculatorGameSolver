@@ -1,11 +1,11 @@
 //How many moves the player is allowed
-const moves = 5;
+const moves = 6;
 
 //The number that must be displayed by the calculator
-const goal = "11";
+const goal = "13";
 
 //The value displayed by the calculator at the beginning of the game
-const initialDisplay = `2`;
+const initialDisplay = `2152`;
 
 const operators = {
   multiply: "multiply",
@@ -26,6 +26,7 @@ interface GameButton {
   operand?: number | string;
   id: number;
   replaceFunction?: ReplaceFunction;
+  direction?: string;
 }
 
 interface ReplaceFunction {
@@ -34,36 +35,43 @@ interface ReplaceFunction {
 }
 
 let button1: GameButton = {
-  operator: operators.multiply,
-  operand: 2,
+  operator: operators.replace,
   id: 1,
+  replaceFunction: {
+    target: "25",
+    replacement: "12",
+  } as ReplaceFunction,
 };
 
 let button2: GameButton = {
-  operator: operators.insert,
-  operand: "10",
+  operator: operators.replace,
   id: 2,
+  replaceFunction: {
+    target: "21",
+    replacement: "3",
+  } as ReplaceFunction,
 };
 
 let button3: GameButton = {
-  operator: operators.sum,
+  operator: operators.replace,
   id: 3,
+  replaceFunction: {
+    target: "12",
+    replacement: "5",
+  } as ReplaceFunction,
 };
 
 let button4: GameButton = {
-  operator: operators.exponent,
-  operand: 3,
+  operator: operators.shift,
   id: 4,
+  direction: "RIGHT",
 };
 
 let button5: GameButton = {
-  operator: operators.replace,
-  replaceFunction: {
-    target: "10",
-    replacement: "1",
-  } as ReplaceFunction,
+  operator: operators.reverse,
   id: 5,
 };
+
 
 let buttons = [button1, button2, button3, button4, button5];
 
@@ -85,7 +93,7 @@ const pressButton = function (
   remainingMoves: number,
   display: string,
   solution: any[],
-  buttonPressed: string,
+  buttonPressed: string
 ): any {
   console.log(buttonPressed);
   console.log("We pressed a button! Remaining moves are: ", remainingMoves);
@@ -102,13 +110,19 @@ const pressButton = function (
   //press a new button
   else {
     console.log("The current solution array is: ", solution);
+    console.log("Current display is: ",display);
     let newMoves = remainingMoves - 1;
     console.log("New Moves is: ", newMoves);
 
     let correctSolution = false;
-    for(let i = 0; i<buttons.length; i++){
-      let potentialSolution = pressButton(newMoves,modifyDisplay(display, buttons[i]), solution.concat([buttons[i]]),`Pressed: Button ${buttons[i].id}`);
-      if(potentialSolution?.display == goal){
+    for (let i = 0; i < buttons.length; i++) {
+      let potentialSolution = pressButton(
+        newMoves,
+        modifyDisplay(display, buttons[i]),
+        solution.concat([buttons[i]]),
+        `Pressed: Button ${buttons[i].id}`
+      );
+      if (potentialSolution?.display == goal) {
         correctSolution = potentialSolution;
         break;
       }
@@ -147,8 +161,22 @@ function modifyDisplay(display: string | number, button: any): string {
     case operators.replace:
       display = replaceDigits(display + "", button.replaceFunction);
       break;
+    case operators.reverse:
+      display = reverseDisplay(display + "");
+      break;
+    default:
+      throw console.error("No operator case found!!!");
   }
   return display + "";
+}
+
+//This is a function to reverse the display '123' becomes '321'
+function reverseDisplay(display: string): string{
+  let newString = '';
+  for (let i = display.length-1; i>=0; i--){
+    newString = newString + display[i];
+  }
+  return newString
 }
 
 //This is a function to replace a specific sequence of digits in the display with a provided replacement sequence
@@ -157,8 +185,9 @@ function replaceDigits(
   replaceFunction: ReplaceFunction
 ): string {
   if (display.length > 1) {
+    const targetString = new RegExp(replaceFunction.target,'g');
     display = display.replace(
-      replaceFunction.target,
+      targetString,
       replaceFunction.replacement
     );
   }
