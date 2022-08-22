@@ -105,56 +105,15 @@ const pressButton = function (
     let newMoves = remainingMoves - 1;
     console.log("New Moves is: ", newMoves);
 
-    let solutionA = pressButton(
-      newMoves,
-      modifyDisplay(display, button1),
-      solution.concat([button1]),
-      "Pressed 1"
-    );
-    console.log("solutionA is: ", solutionA);
-    if (solutionA?.display == goal) {
-      return solutionA;
+    let correctSolution = false;
+    for(let i = 0; i<buttons.length; i++){
+      let potentialSolution = pressButton(newMoves,modifyDisplay(display, buttons[i]), solution.concat([buttons[i]]),`Pressed: Button ${buttons[i].id}`);
+      if(potentialSolution?.display == goal){
+        correctSolution = potentialSolution;
+        break;
+      }
     }
-
-    let solutionB = pressButton(
-      newMoves,
-      modifyDisplay(display, button2),
-      solution.concat([button2]),
-      "Pressed 2"
-    );
-    if (solutionB?.display == goal) {
-      return solutionB;
-    }
-
-    let solutionC = pressButton(
-      newMoves,
-      modifyDisplay(display, button3),
-      solution.concat([button3]),
-      "Pressed 3"
-    );
-    if (solutionC?.display == goal) {
-      return solutionC;
-    }
-
-    let solutionD = pressButton(
-      newMoves,
-      modifyDisplay(display, button4),
-      solution.concat([button4]),
-      "Pressed 4"
-    );
-    if (solutionD?.display == goal) {
-      return solutionD;
-    }
-
-    let solutionE = pressButton(
-      newMoves,
-      modifyDisplay(display, button5),
-      solution.concat([button5]),
-      "Pressed 5"
-    );
-    if (solutionE?.display == goal) {
-      return solutionE;
-    }
+    return correctSolution;
   }
 };
 
@@ -178,9 +137,6 @@ function modifyDisplay(display: string | number, button: any): string {
       break;
     case operators.exponent:
       display = raiseDisplayToPower(+display, button.operand);
-      break;
-    case operators.function:
-      display = button.func(display);
       break;
     case operators.flipSign:
       display = +display * -1;
