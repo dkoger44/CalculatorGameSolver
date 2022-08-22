@@ -185,9 +185,9 @@ function replaceDigits(
   replaceFunction: ReplaceFunction
 ): string {
   if (display.length > 1) {
-    const targetString = new RegExp(replaceFunction.target,'g');
-    display = display.replace(
-      targetString,
+    // const targetString = new RegExp(replaceFunction.target,'g');
+    display = display.replaceAll(
+      replaceFunction.target,
       replaceFunction.replacement
     );
   }
@@ -238,5 +238,8 @@ function shiftDisplay(display: string, direction: string): string {
   return newDisplay;
 }
 
-console.log("Trying to solve...");
-console.log("The solution is: ", solve());
+// console.log("Trying to solve...");
+// console.log("The solution is: ", solve());
+
+console.log("Trying replaceAll");
+console.log(replaceDigits("1212", {target:'12', replacement:'5'}as ReplaceFunction));
